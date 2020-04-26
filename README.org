@@ -1,6 +1,29 @@
 * Scraper
 This is an application that can provide information about different users and their repositories on the github.
 ** Features
-- [X] Scrape user pages if provided with their links/names
-- [X] Save data to the PostgreSQL database
-- [ ] Get data from online scraping or from cache
+- [-] Flask back-end
+  - [X] Scrape user pages if provided with their links/names
+  - [X] Save data to the PostgreSQL database
+  - [ ] Get data from online scraping or from cache
+  - [ ] Refactor
+- [ ] Elm front-end
+- [ ] Docker
+- [ ] Heroku
+** How to set this thing up 
+1. Set up database.
+2. Export 'APP_SETTING' variable.
+    #+BEGIN_SRC shell
+      export APP_SETTING="config.DevelopomentConfig"
+    #+END_SRC
+3. Export 'DATABASE_URL' variable.
+    #+BEGIN_SRC shell
+      export DATABASE_URL="postgresql://localhost/scrape"
+    #+END_SRC
+4. Create and apply migrations, and run application.
+    #+BEGIN_SRC shell
+      python manager.py db init
+      python manager.py db migrate
+      python manager.py db upgrade
+      python manager.py runserver
+    #+END_SRC
+   
