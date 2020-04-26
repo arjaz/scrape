@@ -1,0 +1,5 @@
+* Scraper
+This is an application that can provide information about different users and their repositories on the github.
+** Features
+- [X] Scrape user pages if provided with their links/names
+- [ ] Save data to the PostgreSQL database
