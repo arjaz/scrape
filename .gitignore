@@ -3,3 +3,4 @@ __pycache__
 migrations
 elm-stuff
 elm.js
+front/index.html

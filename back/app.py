@@ -15,18 +15,21 @@ db = SQLAlchemy(app)
 
 from models import Repo, User
 
-# TODO: Add caching
-
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
 
 @app.route('/api/user/<id_>')
 def get_user(id_):
     try:
         user = User.query.filter_by(id=id_).first()
+        repos = [repo.serialize() for repo in user.repos]
+        return jsonify(repos)
+    except Exception as e:
+        return str(e)
+
+
+@app.route('/api/user/name/<name>')
+def get_user_by_name(name):
+    try:
+        user = User.query.filter_by(name=name).first()
         repos = [repo.serialize() for repo in user.repos]
         return jsonify(repos)
     except Exception as e:
@@ -55,7 +58,6 @@ def get_scraped(name):
         try:
             user = User(name=name, link=f'https://github.com/{name}')
             db.session.add(user)
-            db.session.commit()
         except Exception as e:
             return str(e)
 
@@ -75,9 +77,9 @@ def get_scraped(name):
                            user_id=user.id)
 
                 db.session.add(obj)
-                db.session.commit()
         except Exception as e:
             return str(e)
+    db.session.commit()
     return redirect(f'/api/user/{user.id}')
 
 

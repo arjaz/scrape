@@ -43,9 +43,14 @@ init _ =
 
 
 type Msg
-    = GetRepositories Username
+    = GetRepositories Username Source
     | GotRepositories Username (Result Http.Error Repositories)
     | UpdateUserInput String
+
+
+type Source
+    = Database
+    | Github
 
 
 apiLink =
@@ -55,8 +60,17 @@ apiLink =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        GetRepositories username ->
-            ( Loading, Http.get { url = apiLink ++ "/scrape/" ++ username, expect = Http.expectJson (GotRepositories username) repositoriesDecoder } )
+        GetRepositories username source ->
+            case source of
+                Database ->
+                    ( Loading
+                    , Http.get { url = apiLink ++ "/user/name/" ++ username, expect = Http.expectJson (GotRepositories username) repositoriesDecoder }
+                    )
+
+                Github ->
+                    ( Loading
+                    , Http.get { url = apiLink ++ "/scrape/" ++ username, expect = Http.expectJson (GotRepositories username) repositoriesDecoder }
+                    )
 
         GotRepositories username result ->
             case result of
@@ -115,34 +129,43 @@ viewModel : Model -> Html Msg
 viewModel model =
     case model of
         UserInput userInput ->
-            main_ []
-                [ text "Enter a username or link to the user"
-                , viewInput "text" "Username" userInput UpdateUserInput
-                , button [ onClick (GetRepositories userInput) ] [ text "Find Repositories" ]
-                ]
+            viewUserInput userInput
 
         Success username repositories ->
-            main_ []
-                [ h2 [] [ text <| "You are currently viewing repositories of " ++ username ]
-                , ul []
-                    (List.map
-                        (\repo ->
-                            li []
-                                [ ul []
-                                    [ li [] [ text repo.name ]
-                                    , li [] [ text repo.language ]
-                                    ]
-                                ]
-                        )
-                        repositories
-                    )
-                ]
+            viewSuccess username repositories
 
         Loading ->
             main_ [] [ text "Repositories are loading..." ]
 
         Failure error ->
-            main_ [] [ text error ]
+            main_ [] [ text <| "Error: " ++ error ]
+
+
+viewUserInput userInput =
+    main_ []
+        [ text "Enter a username"
+        , viewInput "text" "Username" userInput UpdateUserInput
+        , button [ onClick (GetRepositories userInput Github) ] [ text "Scrape Repositories from Github" ]
+        , button [ onClick (GetRepositories userInput Database) ] [ text "Check Repositories in the Database" ]
+        ]
+
+
+viewSuccess username repositories =
+    main_ []
+        [ h2 [] [ text <| "You are currently viewing repositories of " ++ username ]
+        , ul []
+            (List.map
+                (\repo ->
+                    li []
+                        [ ul []
+                            [ li [] [ text repo.name ]
+                            , li [] [ text repo.language ]
+                            ]
+                        ]
+                )
+                repositories
+            )
+        ]
 
 
 viewHeader : String -> Html msg
