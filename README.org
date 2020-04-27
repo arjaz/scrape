@@ -4,12 +4,12 @@ This is an application that can provide information about different users and th
 - [-] Flask back-end
   - [X] Scrape user pages if provided with their links/names
   - [X] Save data to the PostgreSQL database
-  - [ ] Get data from online scraping or from cache
+  - [X] Get data from online scraping or from cache
   - [ ] Refactor
-- [-] Elm front-end
+- [X] Elm front-end
   - [X] Index page
   - [X] Repositories page
-  - [ ] Cache/scraping choice
+  - [X] Cache/scraping choice
 - [ ] Docker
 - [ ] Heroku
 ** How to set this thing up 
