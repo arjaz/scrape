@@ -28,7 +28,7 @@ type alias Repositories =
 
 
 type alias Repository =
-    { name : String, language : String, description : Maybe String }
+    { name : String, language : Maybe String, description : Maybe String }
 
 
 init : () -> ( Model, Cmd Msg )
@@ -104,7 +104,7 @@ update msg model =
 
 repositoryDecoder : Decoder Repository
 repositoryDecoder =
-    Json.Decode.map3 Repository (field "name" string) (field "lang" string) (field "description" <| maybe string)
+    Json.Decode.map3 Repository (field "name" string) (field "lang" <| maybe string) (field "description" <| maybe string)
 
 
 repositoriesDecoder : Decoder Repositories
@@ -154,18 +154,39 @@ viewSuccess username repositories =
     main_ []
         [ h2 [] [ text <| "You are currently viewing repositories of " ++ username ]
         , ul []
-            (List.map
-                (\repo ->
-                    li []
-                        [ ul []
-                            [ li [] [ text repo.name ]
-                            , li [] [ text repo.language ]
-                            ]
-                        ]
-                )
-                repositories
-            )
+            (List.map viewRepo repositories)
         ]
+
+
+viewRepo repo =
+    case ( repo.language, repo.description ) of
+        ( Just language, Just description ) ->
+            li []
+                [ ul []
+                    [ li [] [ text repo.name ]
+                    , li [] [ text language ]
+                    , li [] [ text description ]
+                    ]
+                ]
+
+        ( Just language, Nothing ) ->
+            li []
+                [ ul []
+                    [ li [] [ text repo.name ]
+                    , li [] [ text language ]
+                    ]
+                ]
+
+        ( Nothing, Just description ) ->
+            li []
+                [ ul []
+                    [ li [] [ text repo.name ]
+                    , li [] [ text description ]
+                    ]
+                ]
+
+        ( _, _ ) ->
+            li [] [ ul [] [ li [] [ text repo.name ] ] ]
 
 
 viewHeader : String -> Html msg
