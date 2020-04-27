@@ -1,19 +1,9 @@
-import os
+from flask import request, redirect, jsonify
 
-from flask import Flask, render_template, request, redirect, jsonify
-from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
-
-from scraper import scrape_profile
-
-app = Flask(__name__)
-app.config.from_object(os.environ['APP_SETTINGS'])
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
-
-db = SQLAlchemy(app)
-
-from models import Repo, User
+from app import app
+from app.database import db
+from app.models import Repo, User
+from app.scraper import scrape_profile
 
 
 @app.route('/api/user/<id_>')
@@ -67,7 +57,7 @@ def get_scraped(name):
         try:
             name = repo['name']
             lang = repo['lang']
-            description = repo['description'] if repo['description'] else ''
+            description = repo['description']
 
             registered = Repo.query.filter_by(name=name).first()
             if registered is None:
@@ -139,7 +129,3 @@ def scrape():
         except Exception as e:
             return str(e)
     return redirect(f'/api/user/{user.id}')
-
-
-if __name__ == '__main__':
-    app.run()
