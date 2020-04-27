@@ -1,11 +1,15 @@
 import os
+
 from flask import Flask, render_template, request, redirect, jsonify
-from scraper import scrape_profile
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+
+from scraper import scrape_profile
 
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 db = SQLAlchemy(app)
 
@@ -24,9 +28,6 @@ def get_user(id_):
     try:
         user = User.query.filter_by(id=id_).first()
         repos = [repo.serialize() for repo in user.repos]
-        print(type(repos))
-        print(repos)
-
         return jsonify(repos)
     except Exception as e:
         return str(e)
@@ -39,6 +40,45 @@ def get_repo(id_):
         return jsonify(repo.serialize())
     except Exception as e:
         return str(e)
+
+
+@app.route('/api/scrape/<name>')
+def get_scraped(name):
+    link = f'https://github.com/{name}'
+
+    # Scraping
+    repos = scrape_profile(link)
+
+    # Check user
+    user = User.query.filter_by(name=name).first()
+    if user is None:
+        try:
+            user = User(name=name, link=f'https://github.com/{name}')
+            db.session.add(user)
+            db.session.commit()
+        except Exception as e:
+            return str(e)
+
+    # If repo exists, do nothing TODO: update
+    # If repo doesn't exist, add it
+    for repo in repos:
+        try:
+            name = repo['name']
+            lang = repo['lang']
+            description = repo['description'] if repo['description'] else ''
+
+            registered = Repo.query.filter_by(name=name).first()
+            if registered is None:
+                obj = Repo(name=name,
+                           lang=lang,
+                           description=description,
+                           user_id=user.id)
+
+                db.session.add(obj)
+                db.session.commit()
+        except Exception as e:
+            return str(e)
+    return redirect(f'/api/user/{user.id}')
 
 
 @app.route('/scrape', methods=['POST'])
