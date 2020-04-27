@@ -6,7 +6,10 @@ This is an application that can provide information about different users and th
   - [X] Save data to the PostgreSQL database
   - [ ] Get data from online scraping or from cache
   - [ ] Refactor
-- [ ] Elm front-end
+- [-] Elm front-end
+  - [X] Index page
+  - [X] Repositories page
+  - [ ] Cache/scraping choice
 - [ ] Docker
 - [ ] Heroku
 ** How to set this thing up 
@@ -26,4 +29,5 @@ This is an application that can provide information about different users and th
       python manager.py db upgrade
       python manager.py runserver
     #+END_SRC
+5. Run elm server in another terminal
    

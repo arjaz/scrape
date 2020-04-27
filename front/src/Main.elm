@@ -14,9 +14,13 @@ import Json.Decode exposing (Decoder, field, maybe, string)
 
 type Model
     = UserInput String
-    | Success String Repositories
+    | Success Username Repositories
     | Loading
     | Failure String
+
+
+type alias Username =
+    String
 
 
 type alias Repositories =
@@ -39,16 +43,20 @@ init _ =
 
 
 type Msg
-    = GetRepositories String
-    | GotRepositories String (Result Http.Error Repositories)
+    = GetRepositories Username
+    | GotRepositories Username (Result Http.Error Repositories)
     | UpdateUserInput String
+
+
+apiLink =
+    "http://127.0.0.1:5000/api"
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         GetRepositories username ->
-            ( Loading, Http.get { url = "http://127.0.0.1:5000/api/scrape/" ++ username, expect = Http.expectJson (GotRepositories username) repositoriesDecoder } )
+            ( Loading, Http.get { url = apiLink ++ "/scrape/" ++ username, expect = Http.expectJson (GotRepositories username) repositoriesDecoder } )
 
         GotRepositories username result ->
             case result of
@@ -116,7 +124,18 @@ viewModel model =
         Success username repositories ->
             main_ []
                 [ h2 [] [ text <| "You are currently viewing repositories of " ++ username ]
-                , ul [] (List.map (\repo -> li [] [ ul [] [ li [] [ text repo.name ], li [] [ text repo.language ] ] ]) repositories)
+                , ul []
+                    (List.map
+                        (\repo ->
+                            li []
+                                [ ul []
+                                    [ li [] [ text repo.name ]
+                                    , li [] [ text repo.language ]
+                                    ]
+                                ]
+                        )
+                        repositories
+                    )
                 ]
 
         Loading ->
