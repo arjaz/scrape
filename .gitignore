@@ -1,3 +1,5 @@
 env
 __pycache__
 migrations
+elm-stuff
+elm.js
