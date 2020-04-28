@@ -1,15 +1,16 @@
 * Scraper
 This is an application that can provide information about different users and their repositories on the github.
 ** Features
-- [-] Flask back-end
+- [X] Flask back-end
   - [X] Scrape user pages if provided with their links/names
   - [X] Save data to the PostgreSQL database
   - [X] Get data from online scraping or from cache
-  - [ ] Refactor
-- [X] Elm front-end
+  - [X] Refactor
+- [-] Elm front-end
   - [X] Index page
   - [X] Repositories page
   - [X] Cache/scraping choice
+  - [ ] CSS
 - [ ] Docker
 - [ ] Heroku
 ** How to set this thing up 
