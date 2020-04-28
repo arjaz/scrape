@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup as soup
 import requests as r
 
 
-# url -> Maybe [{name: str, lang: Maybe str, description: Maybe str}]
 def scrape_profile(
     url: str
 ) -> [{
@@ -10,6 +9,8 @@ def scrape_profile(
         "lang": str or None,
         "description": str or None
 }] or None:
+    """Scrapes github user for his repositories.
+    Returns `None` if user is not found."""
     scrape_url = url + '?tab=repositories'
     projects = []
     answer = r.get(scrape_url)

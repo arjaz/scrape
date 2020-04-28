@@ -5,7 +5,7 @@ class Repo(db.Model):
     __tablename__ = 'repos'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
-    lang = db.Column(db.String(255), nullable=False)
+    lang = db.Column(db.String(255), nullable=True)
     description = db.Column(db.String(), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('repos', lazy=True))

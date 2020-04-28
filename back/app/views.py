@@ -42,6 +42,10 @@ def get_scraped(name):
     # Scraping
     repos = scrape_profile(link)
 
+    # Check results
+    if repos is None:
+        return "No user found on the github", 404
+
     # Check user
     user = User.query.filter_by(name=name).first()
     if user is None:
