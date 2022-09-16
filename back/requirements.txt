@@ -13,7 +13,7 @@ idna==2.9
 itsdangerous==1.1.0
 Jinja2==2.11.3
 lxml==4.6.5
-Mako==1.1.2
+Mako==1.2.2
 MarkupSafe==1.1.1
 psycopg2==2.8.5
 python-dateutil==2.8.1
